@@ -15,6 +15,7 @@ class ApiProvider extends GetConnect {
     httpClient.baseUrl = "https://gateway.marvel.com/v1/public";
   }
 
+//Conexion con el api para obtener los personajes
   Future<dynamic> getCharacters() async {
     final String ts = DateTime.now().millisecondsSinceEpoch.toString();
     final hash = md5.convert(utf8.encode(ts + privateKey + apikey)).toString();
@@ -32,6 +33,7 @@ class ApiProvider extends GetConnect {
     return marvelHeroesModel;
   }
 
+//Conexion con el api para cargar mas personajes
   Future<dynamic> getMoreCharacters(int limit, int offset) async {
     final String ts = DateTime.now().millisecondsSinceEpoch.toString();
     final hash = md5.convert(utf8.encode(ts + privateKey + apikey)).toString();

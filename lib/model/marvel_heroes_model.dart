@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+//modelo para leer la respuesta del servicio
 MarvelHeroesModel marvelHeroesModelFromJson(String str) =>
     MarvelHeroesModel.fromJson(json.decode(str));
 

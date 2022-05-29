@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../model/marvel_heroes_model.dart';
 
+//item del listado de personajes
 class MarvelCharacterListItem extends StatelessWidget {
   final Result hero;
 

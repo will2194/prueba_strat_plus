@@ -11,4 +11,8 @@ class Repository extends GetxController {
   Future<dynamic> getCharactersList() async {
     return await proveedor.getCharacters();
   }
+
+  Future<dynamic> getMoreCharactersList(int limit, int offset) async {
+    return await proveedor.getMoreCharacters(limit, offset);
+  }
 }

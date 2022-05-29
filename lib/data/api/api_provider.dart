@@ -19,7 +19,27 @@ class ApiProvider extends GetConnect {
     final String ts = DateTime.now().millisecondsSinceEpoch.toString();
     final hash = md5.convert(utf8.encode(ts + privateKey + apikey)).toString();
 
-    final resultado = await get("/characters?apikey=$apikey&hash=$hash&ts=$ts");
+    final resultado = await get(
+      "/characters?apikey=$apikey&hash=$hash&ts=$ts",
+    );
+
+    if (!resultado.isOk) {
+      throw ("Error la obtener la lista de personajes (${resultado.statusCode!}: ${resultado.statusText})");
+    }
+
+    final MarvelHeroesModel marvelHeroesModel =
+        MarvelHeroesModel.fromJson(resultado.body as Map<String, dynamic>);
+    return marvelHeroesModel;
+  }
+
+  Future<dynamic> getMoreCharacters(int limit, int offset) async {
+    final String ts = DateTime.now().millisecondsSinceEpoch.toString();
+    final hash = md5.convert(utf8.encode(ts + privateKey + apikey)).toString();
+
+    final resultado = await get(
+      "/characters?apikey=$apikey&hash=$hash&ts=$ts&limit=$limit&offset=$offset",
+    );
+
     if (!resultado.isOk) {
       throw ("Error la obtener la lista de personajes (${resultado.statusCode!}: ${resultado.statusText})");
     }

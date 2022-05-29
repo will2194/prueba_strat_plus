@@ -12,12 +12,15 @@ class HomePage extends GetView<CharactersController> {
 
   @override
   Widget build(BuildContext context) {
-    int counter = 0;
-    List<Result> characterList = [];
-    List<Result> characterFilterList = [];
-
     Get.lazyPut(() => CharactersController(repository: Repository.to));
-    controller.consultarUsuarios();
+
+    ScrollController _scrollController = ScrollController();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        controller.getMoreCharactersList();
+      }
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -32,10 +35,6 @@ class HomePage extends GetView<CharactersController> {
               (result) {
                 MarvelHeroesModel marvelHeroesModel =
                     result as MarvelHeroesModel;
-                counter = marvelHeroesModel.data.count;
-
-                characterList = marvelHeroesModel.data.results;
-                characterFilterList = marvelHeroesModel.data.results;
 
                 return Column(
                   children: [
@@ -59,18 +58,11 @@ class HomePage extends GetView<CharactersController> {
                           borderRadius: BorderRadius.circular(25.0),
                         ),
                       ),
-                      onChanged: (search) {
-                        print(characterFilterList.length);
-                        characterFilterList = characterList
-                            .where((x) => x.name
-                                .toLowerCase()
-                                .contains(search.toLowerCase()))
-                            .toList();
-                        print(characterFilterList.length);
-                      },
+                      onChanged: (search) =>
+                          controller.searchCharacters(search),
                     ),
                     Text(
-                      "${marvelHeroesModel.data.total}/$counter",
+                      "${marvelHeroesModel.data.total}/${controller.characterFilterList.length}",
                       style: const TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.w500,
@@ -78,24 +70,25 @@ class HomePage extends GetView<CharactersController> {
                       ),
                     ),
                     Expanded(
-                      child: ListView.separated(
-                        shrinkWrap: true,
-                        itemCount: characterFilterList.length,
-                        itemBuilder: (_, index) {
-                          Result hero = characterFilterList[index];
+                      child: GetBuilder<CharactersController>(
+                        builder: (_dx) => ListView.builder(
+                          controller: _scrollController,
+                          itemCount: _dx.characterFilterList.length,
+                          itemBuilder: (context, index) {
+                            Result hero = controller.characterFilterList[index];
 
-                          return GestureDetector(
-                            child: MarvelCharacterListItem(
-                              hero: hero,
-                            ),
-                            onTap: () => Get.to(
-                              HeroDetailPage(
+                            return GestureDetector(
+                              child: MarvelCharacterListItem(
                                 hero: hero,
                               ),
-                            ),
-                          );
-                        },
-                        separatorBuilder: (_, __) => const Divider(),
+                              onTap: () => Get.to(
+                                HeroDetailPage(
+                                  hero: hero,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ],
